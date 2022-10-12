@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"time"
@@ -8,27 +9,56 @@ import (
 
 func main() {
 	//
-	fichier, _ := ioutil.ReadFile("projet_hangman/words.txt") // peut varier selon le chemin du fichier. Récupère le fichier Hangman.txt à l'aide de ioutil et l'assigne à la variable fichier, "_" permet de ne pas récupérer l'erreur
-	str := string(fichier)                                    // transforme la variable fichier de type []byte en chaine de caractère et l'assigne à str
+	fichier, _ := ioutil.ReadFile("projet_hangman/words_1.txt") // peut varier selon le chemin du fichier. Récupère le fichier Hangman.txt à l'aide de ioutil et l'assigne à la variable fichier, "_" permet de ne pas récupérer l'erreur
+	str := string(fichier)                                      // transforme la variable fichier de type []byte en chaine de caractère et l'assigne à str
 	//
-	var jeu HangManData
-	jeu.Init()
+	fichier2, _ := ioutil.ReadFile("projet_hangman/pos_hangman.txt")
+	liste_des_positions := string(fichier2)
+	//
+	var jose HangManData
+	jose.Init("josé", nouveau_mot(chaque_mot(str)), 10, chaque_mot(liste_des_positions))
+	lancement_jeu(jose)
 	//
 
+}
+
+//_______________________________________________________________________________________________________________________________________
+
+func lancement_jeu(h HangManData) {
+	
+	for h.Attempts < -1{
+		if h.Attempts == 0 {
+			h.perdu()
+			break
+		}else {
+			h.jouer_tour()
+
+		}
+	}
+
+}
+
+func (h *HangManData) jouer_tour(){
+	h.
+}
+
+func (h HangManData) perdu() {
+	fmt.Println("Vous avez perdu !!!")
+	time.Sleep(3 * time.Second)
 }
 
 //_________________________________________________________________________________________________________________________________________
 
 type HangManData struct {
-	nom              string     // Name of the Hangman
-	Word             string     // Word composed of '_', ex: H_ll_
-	ToFind           string     // Final word chosen by the program at the beginning. It is the word to find
-	Attempts         int        // Number of attempts left
-	HangmanPositions [10]string // It can be the array where the positions parsed in "pos_hangman.txt" are stored
+	nom              string   // Name of the Hangman
+	Word             string   // Word composed of '_', ex: H_ll_
+	ToFind           string   // Final word chosen by the program at the beginning. It is the word to find
+	Attempts         int      // Number of attempts left
+	HangmanPositions []string // It can be the array where the positions parsed in "pos_hangman.txt" are stored
 	ActualPosition   string
 }
 
-func (h *HangManData) Init(nom string, a_trouver string, tentatives int, liste_pose [10]string) {
+func (h *HangManData) Init(nom string, a_trouver string, tentatives int, liste_pose []string) {
 	h.nom = nom
 	h.ToFind = a_trouver
 	h.Attempts = tentatives
