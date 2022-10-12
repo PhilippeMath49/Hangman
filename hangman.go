@@ -25,12 +25,12 @@ func main() {
 //_______________________________________________________________________________________________________________________________________
 
 func lancement_jeu(h HangManData) {
-	
-	for h.Attempts < -1{
+
+	for h.Attempts < -1 {
 		if h.Attempts == 0 {
 			h.perdu()
 			break
-		}else {
+		} else {
 			h.jouer_tour()
 
 		}
@@ -38,8 +38,8 @@ func lancement_jeu(h HangManData) {
 
 }
 
-func (h *HangManData) jouer_tour(){
-	h.
+func (h *HangManData) jouer_tour() {
+	h.Attempts -= 1
 }
 
 func (h HangManData) perdu() {
