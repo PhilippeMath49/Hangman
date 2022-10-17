@@ -9,24 +9,54 @@ import (
 
 func main() {
 	//
-	fichier, _ := ioutil.ReadFile("projet_hangman/words_1.txt") // peut varier selon le chemin du fichier. Récupère le fichier Hangman.txt à l'aide de ioutil et l'assigne à la variable fichier, "_" permet de ne pas récupérer l'erreur
-	str := string(fichier)                                      // transforme la variable fichier de type []byte en chaine de caractère et l'assigne à str
+
 	//
-	fichier2, _ := ioutil.ReadFile("projet_hangman/pos_hangman.txt")
-	liste_des_positions := string(fichier2)
-	//
-	var jose HangManData
-	jose.Init("josé", nouveau_mot(chaque_mot(str)), 10, chaque_mot(liste_des_positions))
-	lancement_jeu(jose)
-	//
+	choix_personnage()
+	//menu()
 
 }
 
 //_______________________________________________________________________________________________________________________________________
 
+func menu() {
+	fmt.Println("Bienvenue dans notre jeu hangman.\nQue souhaitez vous faire ?")
+	fmt.Println("1 : lancer une nouvelle partie")
+	fmt.Println("2 : voir les règles")
+	fmt.Println("3 : arrêter le terminal")
+	var reponse int
+	fmt.Scan(&reponse)
+	switch reponse {
+	case 1:
+		choix_personnage()
+	case 2:
+		affichage_regle()
+	}
+}
+func affichage_regle() {
+	fmt.Println("Le jeu du Hangman consiste à trouver un mot choisit aléatoirement par l'ordinateur.\nVous avez 10 tentatives pour trouver le mot.\nSi vous trouvez le mot avant d'avoir utilisé toutes vos tentatives, vous gagnez.\nSi vous n'avez plus de tentatives, vous perdez.\nBonne chance !!!")
+}
+
+// _______________________________________________________________________________________________________________________________________
+
+func choix_personnage() {
+	fichier, _ := ioutil.ReadFile("hangman/words_1.txt") // peut varier selon le chemin du fichier. Récupère le fichier Hangman.txt à l'aide de ioutil et l'assigne à la variable fichier, "_" permet de ne pas récupérer l'erreur
+	str := string(fichier)                               // transforme la variable fichier de type []byte en chaine de caractère et l'assigne à str
+	//
+	fichier2, _ := ioutil.ReadFile("hangman/pos_hangman.txt")
+	liste_des_positions := string(fichier2)
+	fmt.Println(str)
+	fmt.Println(liste_des_positions)
+	//
+	fmt.Println("Tapez le nom de votre personnage : ")
+	var nom string
+	fmt.Scan(&nom)
+	//var personnage HangManData
+	//personnage.Init(nom,nouveau_mot())
+}
+
 func lancement_jeu(h HangManData) {
 
-	for h.Attempts < -1 {
+	for h.Attempts > -1 {
 		if h.Attempts == 0 {
 			h.perdu()
 			break
@@ -40,6 +70,7 @@ func lancement_jeu(h HangManData) {
 
 func (h *HangManData) jouer_tour() {
 	h.Attempts -= 1
+
 }
 
 func (h HangManData) perdu() {
@@ -67,10 +98,14 @@ func (h *HangManData) Init(nom string, a_trouver string, tentatives int, liste_p
 }
 
 func nouveau_mot(fichier []string) string {
-	rand.Seed(time.Now().UnixNano())
-	random := rand.Intn(len(fichier)) // génère un entier pseudo-aléatoire entre 0 et 100
+	random := random(len(fichier))
 	mot := fichier[random]
 	return mot
+}
+func random(i int) int {
+	rand.Seed(time.Now().UnixNano())
+	random := rand.Intn(i)
+	return random
 }
 
 //_________________________________________________________________________________________________________________________________________
