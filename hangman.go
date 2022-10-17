@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"math/rand"
+	"os"
 	"time"
 )
 
@@ -37,8 +40,23 @@ func affichage_regle() {
 }
 
 // _______________________________________________________________________________________________________________________________________
-
+func transforme_en_liste(fichier *os.File) []string {
+	var liste []string
+	scanner := bufio.NewScanner(fichier)
+	for scanner.Scan() {
+		liste = append(liste, scanner.Text())
+	}
+	return liste
+}
 func choix_personnage() {
+	file, err := os.Open("words_1.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	test := transforme_en_liste(file)
+	fmt.Println(test)
+	file.Close()
+	//
 	fichier, _ := ioutil.ReadFile("hangman/words_1.txt") // peut varier selon le chemin du fichier. Récupère le fichier Hangman.txt à l'aide de ioutil et l'assigne à la variable fichier, "_" permet de ne pas récupérer l'erreur
 	str := string(fichier)                               // transforme la variable fichier de type []byte en chaine de caractère et l'assigne à str
 	//
@@ -126,4 +144,34 @@ func chaque_mot(text string) []string {
 		liste = append(liste, mot) // si mot n'est pas vide, ajout de ce qui reste dans mot au tableau
 	}
 	return liste
+}
+
+func (h *HangManData) verifletter(letter rune) bool {
+	h.DejaDansNom(letter)
+	for _, i := range h.ToFind {
+		if letter == i {
+			return true
+
+		} else if letter == '\n' {
+			return false
+
+		}
+
+	}
+	return false
+}
+
+func (h *HangManData) DejaDansNom(letter rune) {
+	for _, i := range h.Word {
+		if i == letter {
+			fmt.Println("Cette lettre à déja été trouvée")
+
+			break
+		} else if i == '\n' {
+
+			break
+
+		}
+	}
+
 }
