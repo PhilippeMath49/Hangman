@@ -127,33 +127,3 @@ func chaque_mot(text string) []string {
 	}
 	return liste
 }
-
-func (h *HangManData) verifletter(letter rune) bool {
-	h.DejaDansNom(letter)
-	for _, i := range h.ToFind {
-		if letter == i {
-			return true
-
-		} else if letter == '\n' {
-			return false
-
-		}
-
-	}
-	return false
-}
-
-func (h *HangManData) DejaDansNom(letter rune) {
-	for _, i := range h.Word {
-		if i == letter {
-			fmt.Println("Cette lettre à déja été trouvée")
-
-			break
-		} else if i == '\n' {
-
-			break
-
-		}
-	}
-
-}
