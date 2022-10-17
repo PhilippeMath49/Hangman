@@ -87,6 +87,7 @@ type HangManData struct {
 	Attempts         int      // Number of attempts left
 	HangmanPositions []string // It can be the array where the positions parsed in "pos_hangman.txt" are stored
 	ActualPosition   string
+	UsedLetter       []string
 }
 
 func (h *HangManData) Init(nom string, a_trouver string, tentatives int, liste_pose []string) {
@@ -156,4 +157,26 @@ func (h *HangManData) DejaDansNom(letter rune) {
 		}
 	}
 
+}
+
+func (h *HangManData) LettreUtilise(letter string) bool {
+
+	for _, i := range h.UsedLetter {
+		if i == letter {
+
+			return true
+
+		}
+		break
+	}
+	return false
+}
+
+func (h *HangManData) AjoutLettre(letter string) {
+	if h.LettreUtilise(letter) == true {
+		fmt.Println("cette lettre à déja été utilisée")
+
+	} else if h.LettreUtilise(letter) == false {
+		h.UsedLetter = append(h.UsedLetter, letter)
+	}
 }
