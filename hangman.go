@@ -114,7 +114,7 @@ func (h *HangManData) jouer_tour() {
 		fmt.Println("vous vous êtes trompez")
 		// func affichez hangman +1
 	}
-
+	h.Victoire()
 }
 
 func (h HangManData) perdu() {
@@ -207,5 +207,11 @@ func (h *HangManData) AjoutLettre(letter string) {
 
 	} else if h.LettreUtilise(letter) == false {
 		h.UsedLetter = append(h.UsedLetter, letter)
+	}
+}
+
+func (h *HangManData) Victoire() {
+	if h.ToFind == h.Word {
+		fmt.Println("Vous avez trouvé le mot, félicitations.")
 	}
 }
