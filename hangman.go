@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math/rand"
 	"os"
@@ -48,28 +47,45 @@ func transforme_en_liste(fichier *os.File) []string {
 	}
 	return liste
 }
-func choix_personnage() {
-	file, err := os.Open("words_1.txt")
-	if err != nil {
-		log.Fatal(err)
+
+func liste_position(fichier *os.File) []string {
+	var liste []string
+	scanner := bufio.NewScanner(fichier)
+	var stockage string
+	var compteur int
+	for scanner.Scan() {
+		compteur++
+		stockage += string(scanner.Text()) + "\n"
+		if compteur == 8 {
+			liste = append(liste, stockage)
+			compteur = 0
+			stockage = ""
+		}
+
 	}
-	test := transforme_en_liste(file)
-	fmt.Println(test)
-	file.Close()
+	return liste
+}
+func choix_personnage() {
+	file1, err1 := os.Open("words_1.txt")
+	if err1 != nil {
+		log.Fatal(err1)
+	}
+	file1_liste := transforme_en_liste(file1)
+	file1.Close()
 	//
-	fichier, _ := ioutil.ReadFile("hangman/words_1.txt") // peut varier selon le chemin du fichier. Récupère le fichier Hangman.txt à l'aide de ioutil et l'assigne à la variable fichier, "_" permet de ne pas récupérer l'erreur
-	str := string(fichier)                               // transforme la variable fichier de type []byte en chaine de caractère et l'assigne à str
-	//
-	fichier2, _ := ioutil.ReadFile("hangman/pos_hangman.txt")
-	liste_des_positions := string(fichier2)
-	fmt.Println(str)
-	fmt.Println(liste_des_positions)
+	file2, err2 := os.Open("pos_hangman.txt")
+	if err2 != nil {
+		log.Fatal(err2)
+	}
+	liste_des_positions := liste_position(file2)
+	file2.Close()
 	//
 	fmt.Println("Tapez le nom de votre personnage : ")
 	var nom string
 	fmt.Scan(&nom)
-	//var personnage HangManData
-	//personnage.Init(nom,nouveau_mot())
+	var personnage HangManData
+	personnage.Init(nom, nouveau_mot(file1_liste), 10, liste_des_positions)
+	lancement_jeu(personnage)
 }
 
 func lancement_jeu(h HangManData) {
@@ -88,11 +104,17 @@ func lancement_jeu(h HangManData) {
 
 func (h *HangManData) jouer_tour() {
 	h.Attempts -= 1
+	fmt.Println("Quelle lettre voulez vous essayer ?")
+	var lettre string
+	fmt.Scan(&lettre)
+	if h.verifletter(lettre) && !h.DejaDansNom(lettre) {
+		h.remplace(lettre)
+	}
 
 }
 
 func (h HangManData) perdu() {
-	fmt.Println("Vous avez perdu !!!")
+	fmt.Println("\nVous avez perdu !!!")
 	time.Sleep(3 * time.Second)
 }
 
@@ -129,52 +151,37 @@ func random(i int) int {
 
 //_________________________________________________________________________________________________________________________________________
 
-func chaque_mot(text string) []string {
-	// transforme la chaine de caractère obtenue en lisant le fichier en tableau de string
-	liste := []string{}
-	mot := ""
-	for _, element := range text { // parcours de la string text
-		if element == 13 { // vérifie si l'élément est un retour à la ligne
-			liste = append(liste, mot) // si c'est le cas ajoute le mot au tableau
-			mot = ""                   // et réinitialise la variable mot
-		} else { // si l'élément n'est pas un retour à la ligne
-			mot += string(element) // l'élément est ajouté au mot en attendant de rencontrer un retour à la ligne
-		}
-	}
-	if mot != "" { // vérifie si il reste quelque chose dans la variable mot
-		liste = append(liste, mot) // si mot n'est pas vide, ajout de ce qui reste dans mot au tableau
-	}
-	return liste
-}
-
-func (h *HangManData) verifletter(letter rune) bool {
+func (h *HangManData) verifletter(letter string) bool {
 	h.DejaDansNom(letter)
 	for _, i := range h.ToFind {
-		if letter == i {
+		if letter == string(i) {
 			return true
-
-		} else if letter == '\n' {
-			return false
-
 		}
-
 	}
 	return false
 }
 
-func (h *HangManData) DejaDansNom(letter rune) {
+func (h *HangManData) DejaDansNom(letter string) bool {
+	retour := false
 	for _, i := range h.Word {
-		if i == letter {
-			fmt.Println("Cette lettre à déja été trouvée")
-
+		if string(i) == letter {
+			retour = true
 			break
-		} else if i == '\n' {
-
-			break
-
 		}
 	}
+	return retour
+}
 
+func (h *HangManData) remplace(lettre string) {
+	var nouveau_mot string
+	for i := 0; i < len(h.ToFind); i++ {
+		if string(h.ToFind[i]) == lettre {
+			nouveau_mot += lettre
+		} else {
+			nouveau_mot += h.Word
+		}
+	}
+	h.Word = nouveau_mot
 }
 
 func (h *HangManData) LettreUtilise(letter string) bool {
