@@ -107,8 +107,12 @@ func (h *HangManData) jouer_tour() {
 	fmt.Println("Quelle lettre voulez vous essayer ?")
 	var lettre string
 	fmt.Scan(&lettre)
+	h.AjoutLettre(lettre)
 	if h.verifletter(lettre) && !h.DejaDansNom(lettre) {
 		h.remplace(lettre)
+	} else {
+		fmt.Println("vous vous êtes trompez")
+		// func affichez hangman +1
 	}
 
 }
