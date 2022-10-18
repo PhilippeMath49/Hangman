@@ -89,17 +89,14 @@ func choix_personnage() {
 }
 
 func lancement_jeu(h HangManData) {
-
 	for h.Attempts > -1 {
 		if h.Attempts == 0 {
 			h.perdu()
 			break
 		} else {
 			h.jouer_tour()
-
 		}
 	}
-
 }
 
 func (h *HangManData) jouer_tour() {
@@ -189,12 +186,9 @@ func (h *HangManData) remplace(lettre string) {
 }
 
 func (h *HangManData) LettreUtilise(letter string) bool {
-
 	for _, i := range h.UsedLetter {
 		if i == letter {
-
 			return true
-
 		}
 		break
 	}
@@ -213,5 +207,17 @@ func (h *HangManData) AjoutLettre(letter string) {
 func (h *HangManData) Victoire() {
 	if h.ToFind == h.Word {
 		fmt.Println("Vous avez trouvé le mot, félicitations.")
+		var rep int
+		fmt.Scan(&rep)
+		switch rep {
+		case 1:
+			choix_personnage()
+		case 2:
+			Quit()
+		}
 	}
+}
+
+func Quit() {
+	os.Exit(0)
 }
