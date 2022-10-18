@@ -84,7 +84,8 @@ func choix_personnage() {
 	var nom string
 	fmt.Scan(&nom)
 	var personnage HangManData
-	personnage.Init(nom, nouveau_mot(file1_liste), 10, liste_des_positions)
+	mot := nouveau_mot(file1_liste)
+	personnage.Init(nom, mot, word_with_blank(mot), 10, liste_des_positions)
 	lancement_jeu(personnage)
 }
 
@@ -94,6 +95,8 @@ func lancement_jeu(h HangManData) {
 		if h.Attempts == 0 {
 			h.perdu()
 			break
+		} else if h.Word == h.ToFind {
+			h.Victoire()
 		} else {
 			h.jouer_tour()
 
@@ -103,18 +106,24 @@ func lancement_jeu(h HangManData) {
 }
 
 func (h *HangManData) jouer_tour() {
-	h.Attempts -= 1
-	fmt.Println("Quelle lettre voulez vous essayer ?")
+
+	fmt.Println("Il vous reste", h.Attempts, "tentatives.")
+	fmt.Println("Voici la pose actuelle de", h.nom, ":\n ")
+	fmt.Println(h.ActualPosition)
+	fmt.Println("Voici les lettres que vous avez déja essayées :", h.UsedLetter)
+	fmt.Println("Voici ce que vous avez trouvé du mot :", h.Word)
+	fmt.Println("\nQuelle lettre voulez vous essayer ?")
 	var lettre string
 	fmt.Scan(&lettre)
 	h.AjoutLettre(lettre)
 	if h.verifletter(lettre) && !h.DejaDansNom(lettre) {
+		fmt.Println(" \nCette lettre fait bien partie du mot, bravo !")
 		h.remplace(lettre)
 	} else {
-		fmt.Println("vous vous êtes trompez")
-		// func affichez hangman +1
+		fmt.Println("Vous vous êtes trompé.")
+		h.Attempts -= 1
+		h.ActualPosition = h.HangmanPositions[10-h.Attempts]
 	}
-	h.Victoire()
 }
 
 func (h HangManData) perdu() {
@@ -134,14 +143,34 @@ type HangManData struct {
 	UsedLetter       []string
 }
 
-func (h *HangManData) Init(nom string, a_trouver string, tentatives int, liste_pose []string) {
+func (h *HangManData) Init(nom string, a_trouver string, mot_actuel string, tentatives int, liste_pose []string) {
 	h.nom = nom
 	h.ToFind = a_trouver
+	h.Word = mot_actuel
 	h.Attempts = tentatives
 	h.HangmanPositions = liste_pose
 	h.ActualPosition = liste_pose[0]
 }
-
+func word_with_blank(mot string) string {
+	var liste []string
+	for _, element := range mot {
+		liste = append(liste, string(element))
+	}
+	n := len(mot)/2 + 1
+	var nouveau_mot string
+	i := 0
+	for i < len(mot)-n {
+		index := random(len(mot) - 1)
+		if liste[index] != "_" {
+			liste[index] = "_"
+			i++
+		}
+	}
+	for _, element := range liste {
+		nouveau_mot += string(element)
+	}
+	return nouveau_mot
+}
 func nouveau_mot(fichier []string) string {
 	random := random(len(fichier))
 	mot := fichier[random]
@@ -158,7 +187,7 @@ func random(i int) int {
 func (h *HangManData) verifletter(letter string) bool {
 	h.DejaDansNom(letter)
 	for _, i := range h.ToFind {
-		if letter == string(i) {
+		if letter == string(i) || letter == string(i-32) {
 			return true
 		}
 	}
@@ -179,10 +208,10 @@ func (h *HangManData) DejaDansNom(letter string) bool {
 func (h *HangManData) remplace(lettre string) {
 	var nouveau_mot string
 	for i := 0; i < len(h.ToFind); i++ {
-		if string(h.ToFind[i]) == lettre {
+		if string(h.ToFind[i]) == lettre && !h.DejaDansNom(lettre) {
 			nouveau_mot += lettre
 		} else {
-			nouveau_mot += h.Word
+			nouveau_mot += string(h.Word[i])
 		}
 	}
 	h.Word = nouveau_mot
@@ -203,7 +232,7 @@ func (h *HangManData) LettreUtilise(letter string) bool {
 
 func (h *HangManData) AjoutLettre(letter string) {
 	if h.LettreUtilise(letter) == true {
-		fmt.Println("cette lettre à déja été utilisée")
+		fmt.Println("Cette lettre à déja été utilisée.")
 
 	} else if h.LettreUtilise(letter) == false {
 		h.UsedLetter = append(h.UsedLetter, letter)
@@ -212,6 +241,19 @@ func (h *HangManData) AjoutLettre(letter string) {
 
 func (h *HangManData) Victoire() {
 	if h.ToFind == h.Word {
-		fmt.Println("Vous avez trouvé le mot, félicitations.")
+		fmt.Printf("\nVous avez trouvé le mot %s, félicitations.", h.ToFind)
+		fmt.Println("Que souhaitez vous faire ?\n1 : relancer une partie\n2 : Quitter")
+		var rep int
+		fmt.Scan(&rep)
+		switch rep {
+		case 1:
+			choix_personnage()
+		case 2:
+			Quit()
+		}
 	}
+}
+
+func Quit() {
+	os.Exit(0)
 }
