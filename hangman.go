@@ -90,7 +90,6 @@ func choix_personnage() {
 }
 
 func lancement_jeu(h HangManData) {
-
 	for h.Attempts > -1 {
 		if h.Attempts == 0 {
 			h.perdu()
@@ -99,10 +98,8 @@ func lancement_jeu(h HangManData) {
 			h.Victoire()
 		} else {
 			h.jouer_tour()
-
 		}
 	}
-
 }
 
 func (h *HangManData) jouer_tour() {
@@ -218,12 +215,9 @@ func (h *HangManData) remplace(lettre string) {
 }
 
 func (h *HangManData) LettreUtilise(letter string) bool {
-
 	for _, i := range h.UsedLetter {
 		if i == letter {
-
 			return true
-
 		}
 		break
 	}
