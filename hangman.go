@@ -137,7 +137,7 @@ type HangManData struct {
 	Attempts         int      // Number of attempts left
 	HangmanPositions []string // It can be the array where the positions parsed in "pos_hangman.txt" are stored
 	ActualPosition   string
-	UsedLetter       []string
+	UsedLetter       []string // all the used letters are stock in this slice
 }
 
 func (h *HangManData) Init(nom string, a_trouver string, mot_actuel string, tentatives int, liste_pose []string) {
