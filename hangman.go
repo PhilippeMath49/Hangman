@@ -105,15 +105,16 @@ func choix_personnage() {
 }
 
 func lancement_jeu(h HangManData) {
-	if h.Attempts == 0 {
-		h.perdu()
-	}
+
 	for h.Attempts > 0 {
 		if h.Word == h.ToFind {
 			h.Victoire()
 		} else {
 			h.jouer_tour()
 		}
+	}
+	if h.Attempts == 0 {
+		h.perdu()
 	}
 }
 
@@ -129,7 +130,7 @@ func (h *HangManData) jouer_tour() {
 	fmt.Scan(&lettre)
 	if len(lettre) == 1 {
 		h.AjoutLettre(lettre)
-		if h.verifletter(lettre) && !h.DejaDansNom(lettre) {
+		if h.verifletter(lettre) {
 			fmt.Println(" \nCette lettre fait bien partie du mot, bravo !")
 			h.remplace(lettre)
 		} else {
@@ -193,7 +194,7 @@ func word_with_blank(mot string) string {
 	for _, element := range mot {
 		liste = append(liste, string(element))
 	}
-	n := len(mot)/2 + 1
+	n := len(mot)/2 - 1
 	var nouveau_mot string
 	i := 0
 	for i < len(mot)-n {
@@ -222,7 +223,7 @@ func random(i int) int {
 //_________________________________________________________________________________________________________________________________________
 
 func (h *HangManData) verifletter(letter string) bool {
-	h.DejaDansNom(letter)
+
 	for _, i := range h.ToFind {
 		if letter == string(i) || letter == string(i-32) {
 			return true
@@ -245,7 +246,7 @@ func (h *HangManData) DejaDansNom(letter string) bool {
 func (h *HangManData) remplace(lettre string) {
 	var nouveau_mot string
 	for i := 0; i < len(h.ToFind); i++ {
-		if string(h.ToFind[i]) == lettre && !h.DejaDansNom(lettre) {
+		if string(h.ToFind[i]) == lettre {
 			nouveau_mot += lettre
 		} else {
 			nouveau_mot += string(h.Word[i])
