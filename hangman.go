@@ -131,8 +131,9 @@ func (h *HangManData) jouer_tour() {
 	fmt.Println("Voici les lettres que vous avez déja essayées :", h.UsedLetter)
 	fmt.Println("Voici ce que vous avez trouvé du mot :", h.Word)
 	fmt.Println("\nProposez une lettre (coute un essai) ou un mot (coute deux essais) :")
-	var lettre string
-	fmt.Scan(&lettre)
+	var entrée string
+	fmt.Scan(&entrée)
+	lettre := ToLower(entrée)
 	if len(lettre) == 1 { // si le joueur propose une lettre
 		h.AjoutLettre(lettre)      // elle est ajoutée à la liste des lettres déja utilisées si elle n'y est pas déjà
 		if h.verifletter(lettre) { // si la lettre est présente dans le mot
@@ -227,6 +228,20 @@ func random(i int) int {
 }
 
 //_________________________________________________________________________________________________________________________________________
+
+func ToLower(s string) string {
+	//renvoie la string ne contenant que des lettres muniscules
+	resultat := ""
+
+	for i := 0; i < len(s); i++ {
+		if s[i] < 91 && s[i] > 64 {
+			resultat += string(rune(int(s[i]) + 32))
+		} else {
+			resultat += string(s[i])
+		}
+	}
+	return resultat
+}
 
 func (h *HangManData) verifletter(letter string) bool {
 	// vérifie que la lettre soit dans le nom
